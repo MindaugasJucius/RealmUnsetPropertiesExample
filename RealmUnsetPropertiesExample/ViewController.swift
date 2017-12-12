@@ -7,19 +7,24 @@
 //
 
 import UIKit
+import RealmSwift
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        let peer = DMEventPeer.peer(withDisplayName: UIDevice.current.name, storeAsSelf: true, storeAsHost: true)
+        
+        let realm = try! Realm()
+        try! realm.write {
+            peer.id = (realm.objects(DMEventPeer.self).max(ofProperty: "id") ?? 0) + 1
+            realm.add(peer)
+        }
+        
+        let selfPeer = realm.objects(DMEventPeer.self).filter("isSelf == true").first
+        print(selfPeer)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
 
 }
 
